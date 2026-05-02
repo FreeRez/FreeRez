@@ -1,0 +1,1 @@
+ALTER TABLE `restaurants` ADD `floor_plan_layout` text;

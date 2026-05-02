@@ -1,0 +1,44 @@
+name = "freerez"
+compatibility_date = "2025-04-28"
+compatibility_flags = ["nodejs_compat"]
+main = ".svelte-kit/cloudflare/_worker.js"
+
+[assets]
+directory = ".svelte-kit/cloudflare"
+binding = "ASSETS"
+
+[vars]
+PUBLIC_APP_NAME = "FreeRez"
+# ADMIN_API_KEY is set via `wrangler secret put ADMIN_API_KEY`
+
+[[d1_databases]]
+binding = "DB"
+database_name = "freerez-db"
+database_id = "c5a97854-1b33-4e0d-a8fd-f2b9b686c3e6"
+
+[[d1_databases]]
+binding = "CONTROL_PLANE_DB"
+database_name = "freerez-control-plane"
+database_id = "efb2fb7c-b990-4f21-9033-3344a116b1c0"
+
+# Rate limiting: 100 requests per minute per API client
+[[unsafe.bindings]]
+name = "RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "0"
+simple = { limit = 100, period = 60 }
+
+# Durable Object for webhook delivery with hibernation.
+# Requires a separate worker entrypoint. For SvelteKit deployments,
+# deploy the DO as a companion worker and use a Service Binding:
+#
+# [durable_objects]
+# bindings = [{ name = "WEBHOOK_DO", class_name = "WebhookDeliveryDO" }]
+#
+# [[migrations]]
+# tag = "v1"
+# new_classes = ["WebhookDeliveryDO"]
+#
+# Until the companion worker is deployed, the LocalWebhookAdapter
+# handles delivery with in-request retries (no hibernation).
+
